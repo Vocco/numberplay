@@ -1,12 +1,25 @@
 """
-TODO: Add docstring.
+Functions to find amicable numbers.
 """
-from numberplay.utils import division as div
-from numberplay.utils import digits as dig
+from typing import List, Optional, Tuple
 
-def get_amicable(number):
+from numberplay.utils import digits as dig
+from numberplay.utils import division as div
+
+
+def get_amicable(number: int) -> Optional[int]:
     """
-    TODO: Add docstring.
+    Get an amicable counterpart to a number.
+
+    Parameters
+    ----------
+    number : integer
+        The positive integer whose amicable counterpart to find.
+
+    Returns
+    -------
+    integer | None
+        The amicable counterpart to `number` if it exists, None otherwise.
     """
     amicable_candidate = sum(div.find_proper_divisors(number))
 
@@ -15,9 +28,19 @@ def get_amicable(number):
 
     return None
 
-def find_amicable_numbers(num_digits):
+def find_amicable_numbers(num_digits: int) -> List[Tuple[int, int]]:
     """
-    TODO: Add docstring.
+    Find all amicable pairs of `num_digits` digits.
+
+    Parameters
+    ----------
+    num_digits : integer
+        The number of digits of the numbers in the amicable pairs to find.
+
+    Returns
+    -------
+    list(tuple(integer, integer))
+        A list of all amicable pairs of `num_digits` digits.
     """
     amicable_tuples = []
 

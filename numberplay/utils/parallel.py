@@ -27,7 +27,21 @@ def collect_result(result_list: List[Any]) -> Callable[[Any], None]:
 
 def get_chunk_indices(start: int, end: int, chunks: int) -> Generator[Tuple[int, int], None, None]:
     """
-    TODO: Add docstring.
+    Generate indices of chunks for parallel processing.
+
+    Parameters
+    ----------
+    start : integer
+        Index of the first element.
+    end : integer
+        Index of the last element.
+    chunks : integer
+        The number of chunk indice pairs to generate.
+
+    Returns
+    -------
+    generator(tuple(int, int), None, None)
+        A generator of (chunk_start_index, chunk_end_index) tuples.
     """
     chunk_size = 1 + (end - start) // chunks
     for _ in range(chunks):
