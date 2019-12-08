@@ -53,61 +53,68 @@ def is_narcissistic(number: int, num_digits=None) -> bool:
         lambda current_sum, digit: current_sum + digit ** num_digits, d.digit_split(number), 0)
 
 
-def find_narcissistic_numbers(num_digits: int) -> List[int]:
+def find_narcissistic_between(lowest: int, highest: int, num_processes=1) -> List[int]:
     """
-    Find all narcissistic numbers with `num_digits` digits.
-
-    It is highly recommended to use `find_narcissistic_numbers_parallel` to search for narcissistic
-    numbers of more than 5 digits, as the space to search is grows exponentially with respect to
-    the parameter.
+    Find all narcissistic numbers between `lowest` and `highest`.
 
     Parameters
     ----------
-    num_digits : integer
-        The number of digits of the narcissistic numbers to find.
+    lowest : integer
+        The lowest bound to consider. Positive integer.
+    highest : integer
+        The highest bound to consider. Positive integer.
+    num_processes : integer
+        The number of processes over which to parallelize the workload. It is highly recommended to
+        utilize more processes when searching for narcissistic numbers of more than 5 digits, as
+        the space to search is grows exponentially with respect to this value. Defaults to 1.
 
     Returns
     -------
     list(integer)
-        An list over all the narcissistic numbers with `num_digits` digits in increasing order.
+        An list over all the narcissistic numbers between `lowest` and `highest` in increasing
+        order.
     """
-    return list(
-        filter(
-            lambda number: is_narcissistic(number, num_digits),
-            range(d.lowest_n_digit_number(num_digits), d.highest_n_digit_number(num_digits) + 1)))
+    pool = mp.Pool(num_processes)
+    num_digits_lower = len(list(d.digit_split(lowest)))
+    num_digits_higher = len(list(d.digit_split(highest)))
 
-
-def find_narcissistic_numbers_parallel(num_digits: int, processes=1) -> List[int]:
-    """
-    Find all narcissistic numbers with `num_digits` digits.
-
-    This is the preferred function to use when searching for narcissistic numbers of more than 5
-    digits.
-
-    Parameters
-    ----------
-    num_digits : integer
-        The number of digits of the narcissistic numbers to find.
-    processes : integer
-        The number of processes over which to parallelize the workload.
-
-    Returns
-    -------
-    list(integer)
-        A list of all the narcissistic numbers with `num_digits` digits in increasing order.
-    """
-    pool = mp.Pool(processes)
     found: List[int] = []
 
-    for chunk_start, chunk_end in p.get_chunk_indices(
-            d.lowest_n_digit_number(num_digits), d.highest_n_digit_number(num_digits), processes):
-        pool.apply_async(
-            __get_narcissistic_for_chunk,
-            args=(range(chunk_start, chunk_end), num_digits),
-            callback=p.collect_result(found))
+    for digit_difference in range(num_digits_higher - num_digits_lower + 1):
+        num_digits = num_digits_lower + digit_difference
+        digit_range_start = max(lowest, d.lowest_n_digit_number(num_digits))
+        digit_range_end = min(highest, d.highest_n_digit_number(num_digits))
+
+        for indices in p.get_chunk_indices(digit_range_start, digit_range_end, num_processes):
+            pool.apply_async(
+                __get_narcissistic_for_chunk,
+                args=(range(*indices), num_digits),
+                callback=p.collect_result(found))
 
     pool.close()
     pool.join()
 
     return sorted(
         narcissistic_number for chunk_result in found for narcissistic_number in chunk_result)
+
+
+def find_n_narcissistic(num_digits: int, num_processes=1) -> List[int]:
+    """
+    Find all narcissistic numbers with `num_digits` digits.
+
+    Parameters
+    ----------
+    num_digits : integer
+        The number of digits of the narcissistic numbers to find.
+    num_processes : integer
+        The number of processes over which to parallelize the workload. It is highly recommended to
+        utilize more processes when searching for narcissistic numbers of more than 5 digits, as
+        the space to search is grows exponentially with respect to the parameter. Defaults to 1.
+
+    Returns
+    -------
+    list(integer)
+        An list over all the narcissistic numbers with `num_digits` digits in increasing order.
+    """
+    return find_narcissistic_between(
+        d.lowest_n_digit_number(num_digits), d.highest_n_digit_number(num_digits), num_processes)
