@@ -3,7 +3,7 @@ Functions to find narcissistic numbers.
 """
 import functools as ft
 import multiprocessing as mp
-from typing import Callable, Iterable, List
+from typing import Iterable, List
 
 from numberplay.utils import digits as d
 from numberplay.utils import parallel as p
