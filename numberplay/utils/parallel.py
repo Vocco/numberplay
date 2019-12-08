@@ -26,6 +26,9 @@ def collect_result(result_list: List[Any]) -> Callable[[Any], None]:
 
 
 def get_chunk_indices(start: int, end: int, chunks: int) -> Generator[Tuple[int, int], None, None]:
+    """
+    TODO: Add docstring.
+    """
     chunk_size = 1 + (end - start) // chunks
     for _ in range(chunks):
         yield start, min(end + 1, start + chunk_size)

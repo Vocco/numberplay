@@ -115,7 +115,7 @@ def find_narcissistic_numbers_parallel(num_digits: int, processes=1) -> List[int
     found: List[int] = []
 
     for chunk_start, chunk_end in p.get_chunk_indices(
-        d.lowest_n_digit_number(num_digits), d.highest_n_digit_number(num_digits), processes):
+            d.lowest_n_digit_number(num_digits), d.highest_n_digit_number(num_digits), processes):
         pool.apply_async(
             __get_narcissistic_for_chunk,
             args=(range(chunk_start, chunk_end), num_digits),

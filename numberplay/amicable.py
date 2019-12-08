@@ -1,7 +1,13 @@
+"""
+TODO: Add docstring.
+"""
 from numberplay.utils import division as div
 from numberplay.utils import digits as dig
 
 def get_amicable(number):
+    """
+    TODO: Add docstring.
+    """
     amicable_candidate = sum(div.find_proper_divisors(number))
 
     if  sum(div.find_proper_divisors(amicable_candidate)) == number:
@@ -10,11 +16,13 @@ def get_amicable(number):
     return None
 
 def find_amicable_numbers(num_digits):
-
+    """
+    TODO: Add docstring.
+    """
     amicable_tuples = []
 
     for number in range(
-        dig.lowest_n_digit_number(num_digits), dig.highest_n_digit_number(num_digits) + 1):
+            dig.lowest_n_digit_number(num_digits), dig.highest_n_digit_number(num_digits) + 1):
 
         amicable = get_amicable(number)
 
