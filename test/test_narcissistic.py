@@ -6,7 +6,6 @@ import unittest
 from numberplay import narcissistic as tst
 
 
-
 class TestIsNarcissistic(unittest.TestCase):
     """
     A test fixture for:
