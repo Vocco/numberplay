@@ -9,28 +9,6 @@ from numberplay.utils import digits as d
 from numberplay.utils import parallel as p
 
 
-def __get_narcissistic_filter(num_digits: int) -> Callable[[int], bool]:
-    """
-    Initialize a function which determines whether a number is narcissistic.
-
-    Parameters
-    ----------
-    num_digits : integer
-        The number of digits of the numbers which will be input to the resulting function.
-
-    Returns
-    -------
-    integer -> boolean
-        A function which determines if an input number is narcissistic. Guaranteed to work properly
-        only on nonnegative inputs with `num_digits` digits.
-    """
-    def narcissistic_filter(number: int) -> bool:
-        return number == ft.reduce(
-            lambda current_sum, digit: current_sum + digit ** num_digits, d.digit_split(number), 0)
-
-    return narcissistic_filter
-
-
 def __get_narcissistic_for_chunk(chunk: Iterable[int], num_digits: int) -> List[int]:
     """
     Return a list of narcissistic numbers from a chunk of numbers.
@@ -47,10 +25,10 @@ def __get_narcissistic_for_chunk(chunk: Iterable[int], num_digits: int) -> List[
     list(integer)
         A list of all narcissistic integers in `chunk`.
     """
-    return list(filter(__get_narcissistic_filter(num_digits), chunk))
+    return list(filter(lambda number: is_narcissistic(number, num_digits), chunk))
 
 
-def is_narcissistic(number: int) -> bool:
+def is_narcissistic(number: int, num_digits=None) -> bool:
     """
     Determine whether a number is narcissistic.
 
@@ -58,14 +36,21 @@ def is_narcissistic(number: int) -> bool:
     ----------
     number : integer
         A positive integer.
+    num_digits : integer (optional)
+        The number of digits of `number`. If not present, the number of digits will be computed.
+        For batch processing of many numbers with the same number of digits, it is recommended to
+        provide this value as means of optimization.
 
     Returns
     -------
     boolean
         True when `number` is narcissistic, False otherwise.
     """
-    num_digits = len(list(d.digit_split(number)))
-    return __get_narcissistic_filter(num_digits)(number)
+    if num_digits is None:
+        num_digits = len(list(d.digit_split(number)))
+
+    return number == ft.reduce(
+        lambda current_sum, digit: current_sum + digit ** num_digits, d.digit_split(number), 0)
 
 
 def find_narcissistic_numbers(num_digits: int) -> List[int]:
@@ -88,7 +73,7 @@ def find_narcissistic_numbers(num_digits: int) -> List[int]:
     """
     return list(
         filter(
-            __get_narcissistic_filter(num_digits),
+            lambda number: is_narcissistic(number, num_digits),
             range(d.lowest_n_digit_number(num_digits), d.highest_n_digit_number(num_digits) + 1)))
 
 
